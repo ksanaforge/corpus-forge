@@ -1,0 +1,20 @@
+{
+  "name": "yinshun",
+  "description": "yinshun 2017",
+  "version": "1.0.0",
+  "main": "index.html",
+  "single-instance":true,
+	"scripts": {
+    "start": "watchify src/index.js -o static/bundle.js -dv -p livereactload -u react-native -x react -x react-dom -x ksana-codemirror -x codemirror",
+  	"build": "browserify src/index.js -g [envify --NODE_ENV 'production'] -t [ babelify --presets es2015 ] -x ksana-corpus -x ksana-jsonrom -x ksana-corpus-search -u react-native -x ksana-codemirror -x codemirror  -x react -x react-dom  > static/bundle.js",
+    "debugbuild": "browserify src/index.js -t [ babelify --presets es2015 ]  -x ksana-corpus -x ksana-jsonrom -x ksana-corpus-search -u react-native -x ksana-codemirror -x codemirror  -x react -x react-dom  > static/bundle.js"
+	 },
+  "dependencies": {
+  	"ksana2015-breadcrumbtoc":"https://github.com/ksanaforge/ksana2015-breadcrumbtoc.git",
+  	"ksana-codemirror":"https://github.com/ksanaforge/ksana-codemirror.git",
+  	"ksana-corpus-rom":"https://github.com/ksanaforge/ksana-corpus-rom.git",
+  	"ksana-localization":"https://github.com/ksanaforge/ksana-localization.git",
+  	"ksana-corpus":"https://github.com/ksanaforge/ksana-corpus.git",
+  	"ksana-corpus-search":"https://github.com/ksanaforge/ksana-corpus-search.git"
+	}
+}
