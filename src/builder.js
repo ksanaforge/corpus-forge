@@ -1,7 +1,28 @@
 const CorpusBuilder=require("ksana-corpus-builder");
-const createCorpus=CorpusBuilder.createCorpus;
+const createWebCorpus=CorpusBuilder.createWebCorpus;
 
-const start=function(files,cb){
+const start=function(files,logger,cb){
+	createWebCorpus(files,logger,function(err,corpus,written){
+		if (err) {
+			cb(err);
+		} else {
+			try{
+				logger("Use Chrome Devtool to inspect output json");
+				logger(written +" unicode characters indexed.");
+				corpus.writeKDB(null,function(bloburl,size){
+					logger("ROM ready. "+size+" bytes");
+					cb(0,bloburl,"taixu.cor",size);
+				});				
+			} catch(e){
+				cb(e.message||e);
+			}
+		}
+	});	
+}
+module.exports={start}
+
+
+/*
 	var composes=["第零編"],categories=[], groupid;	
 	const capture=function(){return true;}
 	const on_compose_close=function(tag,closing,kpos,tpos){
@@ -18,29 +39,9 @@ const start=function(files,cb){
 		const cat=this.popText();
 		this.putGroup(groupid+";"+(composes.length-1)+"@"+cat,kpos,tpos);
 	}
-	var options={name:"taixu",inputFormat:"accelon3",
-		article:"文",subtoc:"文",
-		bitPat:"taixu",
-		groupPrefix:composes,
-		articleFields:["head","ptr","def","p"],
-		title:"太虛大師全書",
-		autoStart:true}; //set textOnly not to build inverted
-
-	var corpus=createCorpus(options);
 	corpus.setHandlers(
 		{"類":capture,"編":capture},
 		{"類":on_category_close,"編":on_compose_close},
 		{fileStart}  
 	);
-
-	corpus.addBrowserFiles(files,function(err){		
-		if (err) {
-			cb&&cb(err)
-		} else {
-			corpus.writeKDB(null,function(bloburl,size){
-				cb&&cb(0,bloburl,"taixu.cor",size);
-			});
-		}
-	});	
-}
-module.exports={start}
+*/

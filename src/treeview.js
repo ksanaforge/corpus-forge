@@ -169,7 +169,7 @@ var JSONObjectNode = React.createClass({
             const parents=this.props.parents.slice();
             parents.push(this.props.keyName);
 
-            for (k in obj) {
+            for (var k in obj) {
                 if (obj.hasOwnProperty(k)) {
                     childNodes.push( grabNode(k, obj[k],parents,this.props.fetch,this.props.autoopen));
                 }
@@ -188,7 +188,7 @@ var JSONObjectNode = React.createClass({
             var obj = this.props.data;
             var len = 0;
             var lenWord = ' Items';
-            for (k in obj) {
+            for (var k in obj) {
                 if (obj.hasOwnProperty(k)) {
                     len += 1;
                 }
