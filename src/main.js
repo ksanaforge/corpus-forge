@@ -2,7 +2,15 @@ const React=require("react");
 const TreeView=require("./treeview");
 const E=React.createElement;
 const data=require("./manual");
-const {openCorpus}=require("ksana-corpus");
+
+var openCorpus=null
+try {
+	openCorpus=require("ksana-corpus").openCorpus;
+} catch(e){
+	openCorpus=require("ksana-corpus-lib").openCorpus;
+}
+
+
 const Logger=require("./logger");
 const styles={
 	treeview:{height:"90%",overflow:"auto"},
@@ -38,7 +46,7 @@ class Main extends React.Component {
 		this.setState({logs});
 	}
 	build(e){
-		this.setState({logs:[],building:true,built:false});
+		this.setState({logs:[],building:true,built:false,err:null});
 		builder.start(e.target.files,this.log.bind(this),
 			(err,objurl,downloadname,size)=>{
 			if (err) {
@@ -60,13 +68,13 @@ class Main extends React.Component {
 	render(){
 		return E("div",{},
 			E("label",{},
-				E("span",{style:styles.button},"Open COR"),
+				E("span",{style:styles.button},"Open .cor"),
 				E("input",{type:"file",style:{display:"none"},
 					accept:".cor",onChange:this.openfile.bind(this)})
 			),
 
 			E("label",{},
-				E("span",{style:styles.button},"Select Source File"),
+				E("span",{style:styles.button},"Build .cor"),
 				E("input",{ref:"sourcefile",type:"file",style:{display:"none"},
 					multiple:true,onChange:this.build.bind(this)})
 			),

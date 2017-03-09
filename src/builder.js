@@ -1,5 +1,10 @@
-const CorpusBuilder=require("ksana-corpus-builder");
-const createWebCorpus=CorpusBuilder.createWebCorpus;
+var createWebCorpus=null
+try {
+	createWebCorpus=require("ksana-corpus-builder").createWebCorpus;
+} catch(e){
+	createWebCorpus=require("ksana-corpus-lib").createWebCorpus;
+}
+
 
 const start=function(files,logger,cb){
 	createWebCorpus(files,logger,function(err,corpus,written){
