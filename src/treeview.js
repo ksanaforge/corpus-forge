@@ -1,20 +1,20 @@
 const React=require("react");
 const E=React.createElement;
 const MAXNODES=500;
-var grabNode = function (key, value, parents, fetch,autoopen,db) {
+var grabNode = function (key, value, parents, fetch,autoopen,cor) {
     var nodeType = objType(value);
     var theNode;
     var aKey = key + Date.now();
     if (nodeType === 'Object') {
-        theNode = E(JSONObjectNode, {data:value, keyName:key,key:aKey, parents, fetch,autoopen,db:db})
+        theNode = E(JSONObjectNode, {data:value, keyName:key,key:aKey, parents, fetch,autoopen,cor:cor})
     } else if (nodeType === 'Array') {
-        theNode = E(JSONArrayNode, {data:value, keyName:key,key:aKey, parents, fetch,autoopen,db:db} )
+        theNode = E(JSONArrayNode, {data:value, keyName:key,key:aKey, parents, fetch,autoopen,cor:cor} )
     } else if (nodeType === 'String') {
         const defer=value.charCodeAt(0)==0xffff;
         theNode = E( defer?JSONDeferNode:JSONStringNode, 
             {keyName:key,value:value,key:aKey, parents,fetch} )
     } else if (nodeType === 'Number') {
-        theNode = E(JSONNumberNode, {keyName:key,value:value,key:aKey, parents, fetch,db:db} )
+        theNode = E(JSONNumberNode, {keyName:key,value:value,key:aKey, parents, fetch,cor:cor} )
     } else if (nodeType === 'Boolean') {
         theNode = E(JSONBooleanNode, {keyName:key,value:value,key:aKey, parents, fetch} )
     } else if (nodeType === 'Null') {
@@ -104,7 +104,7 @@ var JSONArrayNode = React.createClass({
             parents.push(this.props.keyName);
             for (var i = 0; i < len; i += 1) {
                 childNodes.push( 
-                    grabNode(i, this.props.data[i], parents, this.props.fetch, this.props.autoopen,this.props.db));
+                    grabNode(i, this.props.data[i], parents, this.props.fetch, this.props.autoopen,this.props.cor));
             }
             this.needsChildNodes = false;
             this.renderedChildren = childNodes;
@@ -171,7 +171,7 @@ var JSONObjectNode = React.createClass({
 
             for (var k in obj) {
                 if (obj.hasOwnProperty(k)) {
-                    childNodes.push( grabNode(k, obj[k],parents,this.props.fetch,this.props.autoopen,this.props.db));
+                    childNodes.push( grabNode(k, obj[k],parents,this.props.fetch,this.props.autoopen,this.props.cor));
                 }
             }
             this.needsChildNodes = false;
@@ -272,18 +272,18 @@ var JSONNumberNode = React.createClass({
     }
     ,getText:function(e){
         var addr=e.target.innerHTML;
-        const r=this.props.db.parseRange(addr);
+        const r=this.props.cor.parseRange(addr);
         if (!r)return;
         if (r.start==r.end) {
             addr+='-99';
         }
-        this.props.db.getText(addr,function(text){
+        this.props.cor.getText(addr,function(text){
             this.setState({text:text.join("").substr(0,30)});
         }.bind(this));
     }
     ,render: function () {
         var label=this.props.value;
-        var translated=this.props.db?this.props.db.stringify(this.props.value):"";
+        var translated=this.props.cor?this.props.cor.stringify(this.props.value):"";
         if (!parseInt(translated,10)) {
             translated="";
         } else translated=" "+translated;
@@ -347,7 +347,7 @@ var JSONBooleanNode = React.createClass({
  */
 var JSONTree = React.createClass({
     fetch:function(path){
-        this.props.db.get(path,data=>{
+        this.props.cor.get(path,data=>{
             var storepoint=this.state.data;
             for (var i=0;i<path.length;i++) {
                 if (i<path.length-1) {
@@ -370,10 +370,10 @@ var JSONTree = React.createClass({
         var rootNode;
         
         if (nodeType === 'Object') {
-            rootNode = E(JSONObjectNode,{ data:this.state.data, db:this.props.db,
+            rootNode = E(JSONObjectNode,{ data:this.state.data, cor:this.props.cor,
                 keyName:"/", initialExpanded:true, parents:[], fetch:this.fetch,autoopen:this.state.autoopen} )
         } else if (nodeType === 'Array') {
-            rootNode = E(JSONArrayNode,{ data:this.state.data, db:this.props.db,
+            rootNode = E(JSONArrayNode,{ data:this.state.data, cor:this.props.cor,
                 initialExpanded:true, keyName:"(root)", parents:[], fetch:this.fetch,autoopen:this.state.autoopen});
         } else {
             console.error("How did you manage that?");

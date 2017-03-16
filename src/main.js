@@ -2,7 +2,8 @@ const React=require("react");
 const TreeView=require("./treeview");
 const E=React.createElement;
 const data=require("./manual");
-
+const Homebar=require("./homebar");
+const KPosCal=require("./kposcal");
 var openCorpus=null
 try {
 	openCorpus=require("ksana-corpus").openCorpus;
@@ -25,16 +26,12 @@ class Main extends React.Component {
 		super(props);
 		this.state={data,objurl:null,err:null,building:false,logs:[]};
 	}
-	componentDidMount(){
-		this.refs.sourcefile.directory=true;
-		this.refs.sourcefile.webkitdirectory =true;
-	}
 	openfile(e){
 		const id=e.target.files[0];
-		openCorpus(id,(err,db)=>{
-			db.get([],cache=>{
+		openCorpus(id,(err,cor)=>{
+			cor.get([],cache=>{
 
-				this.setState({data:cache,db})
+				this.setState({data:cache,cor})
 			})
 		})
 	}
@@ -54,9 +51,9 @@ class Main extends React.Component {
 				return;
 			}
 			const path=objurl+"#"+downloadname.replace(/\..+/,"")+"*"+size;
-			openCorpus(path,(err,db)=>{
-				db.get([],cache=>{
-					this.setState({data:cache,db,built:true})
+			openCorpus(path,(err,cor)=>{
+				cor.get([],cache=>{
+					this.setState({data:cache,cor,built:true})
 				})
 			})			
 			this.setState({objurl,downloadname});
@@ -67,17 +64,8 @@ class Main extends React.Component {
 	}
 	render(){
 		return E("div",{},
-			E("label",{},
-				E("span",{style:styles.button},"Open .cor"),
-				E("input",{type:"file",style:{display:"none"},
-					accept:".cor",onChange:this.openfile.bind(this)})
-			),
-
-			E("label",{},
-				E("span",{style:styles.button},"Build .cor"),
-				E("input",{ref:"sourcefile",type:"file",style:{display:"none"},
-					multiple:true,onChange:this.build.bind(this)})
-			),
+			E(Homebar,{openfile:this.openfile.bind(this),build:this.build.bind(this)}),
+			E(KPosCal,{cor:this.state.cor}),
 			this.state.err?E("span",{style:styles.err},this.state.err):null,
 			(this.state.objurl&&!this.state.building)?
 				E("a",{href:this.state.objurl,style:styles.download,
@@ -87,7 +75,7 @@ class Main extends React.Component {
 			this.state.building?
 			E(Logger,{logs:this.state.logs}):
 			E("div",{style:styles.treeview},
-				E(TreeView,{db:this.state.db,data:this.state.data}))
+				E(TreeView,{cor:this.state.cor,data:this.state.data}))
 		)
 	}
 }
