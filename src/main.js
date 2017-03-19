@@ -4,11 +4,13 @@ const E=React.createElement;
 const data=require("./manual");
 const Homebar=require("./homebar");
 const KPosCal=require("./kposcal");
-var openCorpus=null
+var openCorpus=null,closeCorpus=null;
 try {
 	openCorpus=require("ksana-corpus").openCorpus;
+	closeCorpus=require("ksana-corpus").closeCorpus;
 } catch(e){
 	openCorpus=require("ksana-corpus-lib").openCorpus;
+	closeCorpus=require("ksana-corpus-lib").closeCorpus;
 }
 
 
@@ -28,6 +30,7 @@ class Main extends React.Component {
 	}
 	openfile(e){
 		const id=e.target.files[0];
+		closeCorpus(id);
 		openCorpus(id,(err,cor)=>{
 			cor.get([],cache=>{
 				this.setState({data:cache,cor})
