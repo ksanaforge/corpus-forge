@@ -4,7 +4,6 @@ const styles={
 	button:{background:"silver",color:"black",border:"1px solid"}
 }
 class Homebar extends React.Component {
-
 	componentDidMount(){
 		this.refs.sourcefile.directory=true;
 		this.refs.sourcefile.webkitdirectory =true;

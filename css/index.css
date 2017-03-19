@@ -189,8 +189,15 @@ ol>li>label {
 .string>span {
     color: #a3a13D
 }
-.number>span {
+.number {
     color: #0B75F5
+}
+.kpos {
+    color:lightgreen;
+    cursor:pointer;
+}
+.ktext{
+    color:white;
 }
 .boolean>span {
     color: #08C6CE;

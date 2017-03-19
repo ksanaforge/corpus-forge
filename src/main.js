@@ -30,7 +30,6 @@ class Main extends React.Component {
 		const id=e.target.files[0];
 		openCorpus(id,(err,cor)=>{
 			cor.get([],cache=>{
-
 				this.setState({data:cache,cor})
 			})
 		})
@@ -39,11 +38,11 @@ class Main extends React.Component {
 		var args = Array.prototype.slice.call(arguments);
 		const logs=this.state.logs;
 		args.unshift(new Date());
-		logs.unshift(args);
+		logs.push(args);
 		this.setState({logs});
 	}
 	build(e){
-		this.setState({logs:[],building:true,built:false,err:null});
+		this.setState({logs:[],starttime:new Date(),building:true,built:false,err:null});
 		builder.start(e.target.files,this.log.bind(this),
 			(err,objurl,downloadname,size)=>{
 			if (err) {
@@ -73,7 +72,7 @@ class Main extends React.Component {
 
 			this.state.built?E("button",{onClick:this.inspect.bind(this)},"Inspect Built Corpus"):null,
 			this.state.building?
-			E(Logger,{logs:this.state.logs}):
+			E(Logger,{logs:this.state.logs,starttime:this.state.starttime}):
 			E("div",{style:styles.treeview},
 				E(TreeView,{cor:this.state.cor,data:this.state.data}))
 		)

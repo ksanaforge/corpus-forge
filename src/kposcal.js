@@ -2,7 +2,8 @@ const React=require("react");
 const E=React.createElement;
 const styles={
 	button:{background:"silver",color:"black",border:"1px solid"},
-	label:{color:"silver"}
+	label:{color:"silver"},
+	input:{width:"10em"}
 }
 const kposFromRange=function(r){
 	var kpos=r?r.range:'';
@@ -38,9 +39,11 @@ class KPosCal extends React.Component {
 		if (!this.props.cor)return E("span",{},"");
 		return E("span",{},
 			E("span",{style:styles.label},"kpos:"),
-			E("input",{onChange:this.fromKPos.bind(this),value:this.state.kpos}),
+			E("input",{style:styles.input,
+				onChange:this.fromKPos.bind(this),value:this.state.kpos}),
 			E("span",{style:styles.label},"address"),
-			E("input",{onChange:this.toKPos.bind(this),value:this.state.address})
+			E("input",{style:styles.input,
+				onChange:this.toKPos.bind(this),value:this.state.address})
 		)
 	}
 }

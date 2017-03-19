@@ -17,13 +17,17 @@ class Logger extends React.Component {
 			style=styles[log.shift()];
 		}
 		const logmessage=log.join(" ");
-		
+		const ts=timestamp.toTimeString().substr(0,8);
 		return E("div",{key,style:styles.log},
-			E("span",{style:styles.timestamp},timestamp.toTimeString().substr(0,8))
-			," ",E("span",{style},logmessage));
+			E("span",{}," ",E("span",{style},logmessage)));
 	}
 	render(){
-		return E("div",{style:styles.container},this.props.logs.map(this.renderLog.bind(this)));
+		return E("div",{style:styles.container},
+			E("div",{style:styles.timestamp}
+				,new Date().toString().replace(/GMT.+/,"")
+				,",started at: "+this.props.starttime.toString().replace(/GMT.+/,"")),
+			this.props.logs.map(this.renderLog.bind(this))
+		);
 	}
 }
 module.exports=Logger;

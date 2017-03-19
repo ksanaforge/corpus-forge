@@ -12,11 +12,10 @@ const start=function(files,logger,cb){
 			cb(err);
 		} else {
 			try{
-				logger("Use Chrome Devtool to inspect output json");
 				logger(written +" unicode characters indexed.");
 				corpus.writeKDB(null,function(bloburl,size){
 					logger("ROM ready. "+size+" bytes");
-					cb(0,bloburl,"taixu.cor",size);
+					cb(0,bloburl,corpus.id+".cor",size);
 				});				
 			} catch(e){
 				cb(e.message||e);
