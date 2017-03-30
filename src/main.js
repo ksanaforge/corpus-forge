@@ -5,12 +5,12 @@ const data=require("./manual");
 const Homebar=require("./homebar");
 const KPosCal=require("./kposcal");
 var openCorpus=null,closeCorpus=null;
-try {
+if (typeof KsanaCorpus!=="undefined") {
+	openCorpus=KsanaCorpus.openCorpus;
+	closeCorpus=KsanaCorpus.closeCorpus;
+}else{
 	openCorpus=require("ksana-corpus").openCorpus;
 	closeCorpus=require("ksana-corpus").closeCorpus;
-} catch(e){
-	openCorpus=require("ksana-corpus-lib").openCorpus;
-	closeCorpus=require("ksana-corpus-lib").closeCorpus;
 }
 
 

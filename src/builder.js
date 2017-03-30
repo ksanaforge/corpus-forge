@@ -1,10 +1,9 @@
 var createWebCorpus=null
-try {
+if (typeof KsanaCorpusBuilder!=="undefined") {
+	createWebCorpus=KsanaCorpusBuilder.createWebCorpus;
+} else {
 	createWebCorpus=require("ksana-corpus-builder").createWebCorpus;
-} catch(e){
-	createWebCorpus=require("ksana-corpus-lib").createWebCorpus;
 }
-
 
 const start=function(files,logger,cb){
 	createWebCorpus(files,logger,function(err,corpus,written){
