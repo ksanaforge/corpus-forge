@@ -1,5 +1,1 @@
-cd ..
-cd ..
-cmd/c makeksanalib
-copy/y ksanalib.min.js corpus-forge\static\
-cd corpus-forge/buildscript
+copy/y ..\..\node_modules\ksana-corpus-lib\ksanalib.min.js static
