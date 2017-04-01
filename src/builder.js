@@ -2,7 +2,8 @@ var createWebCorpus=null
 if (typeof KsanaCorpusBuilder!=="undefined") {
 	createWebCorpus=KsanaCorpusBuilder.createWebCorpus;
 } else {
-	createWebCorpus=require("ksana-corpus-builder").createWebCorpus;
+	const KSANACORPUSBUILDER="ksana-corpus-builder";
+	createWebCorpus=require(KSANACORPUSBUILDER).createWebCorpus;
 }
 
 const start=function(files,logger,cb){

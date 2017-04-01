@@ -9,8 +9,9 @@ if (typeof KsanaCorpus!=="undefined") {
 	openCorpus=KsanaCorpus.openCorpus;
 	closeCorpus=KsanaCorpus.closeCorpus;
 }else{
-	openCorpus=require("ksana-corpus").openCorpus;
-	closeCorpus=require("ksana-corpus").closeCorpus;
+	const KSANACORPUS="ksana-corpus";
+	openCorpus=require(KSANACORPUS).openCorpus;
+	closeCorpus=require(KSANACORPUS).closeCorpus;
 }
 
 
