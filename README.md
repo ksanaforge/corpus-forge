@@ -1,7 +1,19 @@
 # Corpus-Forge
 
-npm run build
+==first time setup==
+    cd buildscript
+    ksana-bundle
+    react-bundle
+    cd ..
 
-cd buildscript
-ksana-bundle
-react-bundle
+==start development==
+    npm start
+
+==generate release bundle.js==
+    npm run build
+
+   double click index.html
+
+===debugging ksana core==
+    cd buildscript
+    ksana-bundle-debug.cmd
