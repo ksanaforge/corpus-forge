@@ -258,14 +258,14 @@ var E = React.createElement;
 var data = require("./manual");
 var Homebar = require("./homebar");
 var KPosCal = require("./kposcal");
-var openCorpus = null,
+var _openCorpus = null,
     closeCorpus = null;
 if (typeof KsanaCorpus !== "undefined") {
-	openCorpus = KsanaCorpus.openCorpus;
+	_openCorpus = KsanaCorpus.openCorpus;
 	closeCorpus = KsanaCorpus.closeCorpus;
 } else {
 	var KSANACORPUS = "ksana-corpus";
-	openCorpus = require(KSANACORPUS).openCorpus;
+	_openCorpus = require(KSANACORPUS).openCorpus;
 	closeCorpus = require(KSANACORPUS).closeCorpus;
 }
 
@@ -278,6 +278,15 @@ var styles = {
 	button: { background: "silver", color: "black", border: "1px solid" }
 };
 var builder = require("./builder");
+var parseRoute = function parseRoute(route) {
+	var regex = /[?#&]([^=#]+)=([^&#]*)/g,
+	    params = {},
+	    match;
+	while (match = regex.exec(route)) {
+		params[match[1]] = match[2];
+	}
+	return params;
+};
 
 var Main = function (_React$Component) {
 	_inherits(Main, _React$Component);
@@ -292,17 +301,34 @@ var Main = function (_React$Component) {
 	}
 
 	_createClass(Main, [{
-		key: "openfile",
-		value: function openfile(e) {
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			var hash = window.location.hash;
+			if (hash.match(/%[0-9A-Fa-f]/)) {
+				hash = decodeURIComponent(hash);
+			}
+			var params = parseRoute(hash);
+			if (params.c) {
+				this.openCorpus(params.c);
+			}
+		}
+	}, {
+		key: "openCorpus",
+		value: function openCorpus(id) {
 			var _this2 = this;
 
-			var id = e.target.files[0];
-			closeCorpus(id);
-			openCorpus(id, function (err, cor) {
+			_openCorpus(id, function (err, cor) {
 				cor.get([], function (cache) {
 					_this2.setState({ data: cache, cor: cor });
 				});
 			});
+		}
+	}, {
+		key: "openfile",
+		value: function openfile(e) {
+			var id = e.target.files[0];
+			closeCorpus(id);
+			this.openCorpus(id);
 		}
 	}, {
 		key: "log",
@@ -325,7 +351,7 @@ var Main = function (_React$Component) {
 					return;
 				}
 				var path = objurl + "#" + downloadname.replace(/\..+/, "") + "*" + size;
-				openCorpus(path, function (err, cor) {
+				_openCorpus(path, function (err, cor) {
 					cor.get([], function (cache) {
 						_this3.setState({ data: cache, cor: cor, built: true });
 					});
@@ -356,14 +382,15 @@ module.exports = Main;
 
 module.exports = {
 	"名稱": "Corpus Forge",
-	"版本": 20170415,
+	"版本": 20170423,
 	"語法": {
 		"分頁": "pb"
 	},
 	"版本沿革": {
 		"20170320": "支援內嵌圖檔",
 		"20170321": "預載欄位gfields",
-		"20170415": "支援外部互文標記及svg"
+		"20170415": "支援外部互文標記及svg",
+		"20170423": "顯示圖檔"
 	}
 };
 
@@ -588,10 +615,49 @@ var JSONObjectNode = React.createClass({
 /**
  * String node component
  */
+var supportimages = ["jpg", "jpeg", "png"];
+var showimage = function showimage(e) {
+    e.target.src = e.target.dataset.src;
+    e.stopPropagation();
+    e.preventDefault();
+};
+var showsvg = function showsvg(e) {
+    e.target.innerHTML = e.target.dataset.src;
+    e.stopPropagation();
+    e.preventDefault();
+};
+var resolveStyleConflict = function resolveStyleConflict(svgcontent, id) {
+    return svgcontent.replace(/st(\d+)/g, function (m, m1) {
+        return "st" + id + "-" + m1;
+    });
+};
+var renderString = function renderString(str, parents) {
+    var fieldname = "";
+    if (parents.length > 2) {
+        fieldname = parents[parents.length - 2];
+    }
+    var src = "img/view-icon.png";
+    if (fieldname == "svg" || fieldname == "figure" || fieldname == "table") {
+        if (str.indexOf("svg") > -1) {
+            str = str.replace(/<!--.+?-->\r?\n?/g, "").replace(/<!DOCTYPE.+?>\r?\n/, "").replace(/<\?xml.+>\r?\n/, "");
+            str = resolveStyleConflict(str, Math.random().toString().substr(2));
+            return E("div", { style: { background: "gray" }, "data-src": str, onClick: showsvg }, "view SVG");
+        }
+    } else if (supportimages.indexOf(fieldname) > -1) {
+        var data = 'data:img/' + fieldname + ';base64,' + str;
+        if (str.length < 4000) {
+            //show small image immediately
+            return E("img", { src: data });
+        } else {
+            return E("img", { "data-src": data, src: src, onClick: showimage });
+        }
+    }
+    return str;
+};
 var JSONStringNode = React.createClass({
     mixins: [SquashClickEventMixin],
     render: function render() {
-        return E("li", { className: "string itemNode", onClick: this.handleClick }, E("label", {}, this.props.keyName + ":"), E("span", {}, this.props.value));
+        return E("li", { className: "string itemNode" }, E("label", {}, this.props.keyName + ":"), E("span", {}, renderString(this.props.value, this.props.parents)));
     }
 });
 

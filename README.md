@@ -14,6 +14,10 @@
 
    double click index.html
 
+==open corpus automatically with hash tag==
+
+  	localhost/corpus-forge/#c=corpus-id
+
 ===debugging ksana core==
     cd buildscript
     ksana-bundle-debug.cmd

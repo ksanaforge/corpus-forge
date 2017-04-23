@@ -233,13 +233,52 @@ var JSONObjectNode = React.createClass({
 /**
  * String node component
  */
+const supportimages=["jpg","jpeg","png"];
+const showimage=function(e){
+    e.target.src=e.target.dataset.src;
+    e.stopPropagation()
+    e.preventDefault();
+}
+const showsvg=function(e){
+    e.target.innerHTML=e.target.dataset.src;
+    e.stopPropagation()
+    e.preventDefault();
+}
+const resolveStyleConflict=function(svgcontent,id){
+    return svgcontent.replace(/st(\d+)/g,function(m,m1){
+        return "st"+id+"-"+m1;
+    })
+}
+const renderString=function(str,parents){
+    var fieldname="";
+    if (parents.length>2 ) {
+        fieldname=parents[parents.length-2];
+    }
+    var src="img/view-icon.png";
+    if (fieldname=="svg" || fieldname=="figure" || fieldname=="table") {
+        if (str.indexOf("svg")>-1) {
+            str=str.replace(/<!--.+?-->\r?\n?/g,"")
+            .replace(/<!DOCTYPE.+?>\r?\n/,"").replace(/<\?xml.+>\r?\n/,"");
+            str=resolveStyleConflict(str,Math.random().toString().substr(2));
+            return E("div",{style:{background:"gray"}, "data-src":str,onClick:showsvg},"view SVG");
+        }
+    } else if (supportimages.indexOf(fieldname)>-1) {
+        const data='data:img/'+fieldname+';base64,'+str;
+        if (str.length<4000) { //show small image immediately
+            return E("img",{src:data});
+        } else {
+            return E("img",{"data-src":data,src,onClick:showimage});
+        }
+    }
+    return str;
+}
 var JSONStringNode = React.createClass({
     mixins: [SquashClickEventMixin],
     render: function () {
         return (
-            E("li", {className:"string itemNode",onClick:this.handleClick},
+            E("li", {className:"string itemNode"},
                 E("label",{},this.props.keyName+":"),
-                E("span",{},this.props.value)
+                E("span",{},renderString(this.props.value,this.props.parents))
             )
         );
     }

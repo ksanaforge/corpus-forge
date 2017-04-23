@@ -24,19 +24,39 @@ const styles={
 	button:{background:"silver",color:"black",border:"1px solid"}
 }
 const builder=require("./builder");
+const parseRoute=function(route){
+	var regex = /[?#&]([^=#]+)=([^&#]*)/g, params = {}, match ;
+	while(match = regex.exec(route)) {
+	  params[match[1]] = match[2];
+	}
+	return params;
+}
 class Main extends React.Component {
 	constructor(props){
 		super(props);
 		this.state={data,objurl:null,err:null,building:false,logs:[]};
 	}
-	openfile(e){
-		const id=e.target.files[0];
-		closeCorpus(id);
+	componentDidMount(){
+		var hash=window.location.hash;
+		if (hash.match(/%[0-9A-Fa-f]/)) {
+			hash=decodeURIComponent(hash);
+		}
+		const params=parseRoute(hash);
+		if (params.c) {
+			this.openCorpus(params.c)
+		}
+	}
+	openCorpus(id){
 		openCorpus(id,(err,cor)=>{
 			cor.get([],cache=>{
 				this.setState({data:cache,cor})
 			})
 		})
+	}
+	openfile(e){
+		const id=e.target.files[0];
+		closeCorpus(id);
+		this.openCorpus(id);
 	}
 	log(){
 		var args = Array.prototype.slice.call(arguments);
